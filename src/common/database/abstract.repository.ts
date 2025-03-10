@@ -1,4 +1,4 @@
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { AbstractDocument } from './abstract.schema';
 import { Model } from 'mongoose';
 
