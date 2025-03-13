@@ -18,8 +18,8 @@ export class UsersService {
     return this.userRepository.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(_id: string) {//in mongodb _id is string value!!!***
+    return this.userRepository.findOne({ _id });
   }
 
   update(id: number, updateUserInput: UpdateUserInput) {
