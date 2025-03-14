@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -26,12 +26,17 @@ export class UsersService {
   }
 
   async update(_id: string, updateUserInput: UpdateUserInput) {
-    return this.userRepository.findOneAndUpdate({_id} , {
-      $set : {
-        ...UpdateUserInput ,
-        password : await this.hashPassword(updateUserInput.password) ,
-        }
-      }
+    const updateData: Record<string, any> = {
+      ...updateUserInput, 
+    };
+    if (updateUserInput.password) {
+      updateData.password = await this.hashPassword(updateUserInput.password);
+    } else {
+      delete updateData.password;
+    }
+    return this.userRepository.findOneAndUpdate(
+      { _id },
+      { $set: updateData }
     );
   }
 
