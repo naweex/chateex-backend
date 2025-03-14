@@ -3,7 +3,6 @@ import * as bcrypt from 'bcrypt'
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UserRepository } from './user.repository';
-import { string } from 'joi';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +35,7 @@ export class UsersService {
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(_id: string) {
+    return await this.userRepository.findOneAndDelete({_id});
   }
 }
