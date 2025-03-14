@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt'
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UserRepository } from './user.repository';
+import { string } from 'joi';
 
 @Injectable()
 export class UsersService {
@@ -10,10 +11,13 @@ export class UsersService {
   async create(createUserInput: CreateUserInput) {
     return this.userRepository.create({
       ...createUserInput ,
-      password : await bcrypt.hash(createUserInput.password , 10)//10 for salt
+      password : await this.hashPassword(createUserInput.password)
     });
   }
 
+  private async hashPassword(password : string) {
+    return bcrypt.hash(password , 10)//10 for salt
+  }
   async findAll() {
     return this.userRepository.find({});
   }
@@ -22,8 +26,14 @@ export class UsersService {
     return this.userRepository.findOne({ _id });
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  async update(_id: string, updateUserInput: UpdateUserInput) {
+    return this.userRepository.findOneAndUpdate({_id} , {
+      $set : {
+        ...UpdateUserInput ,
+        password : await this.hashPassword(updateUserInput.password) ,
+        }
+      }
+    );
   }
 
   remove(id: number) {
